@@ -65,7 +65,22 @@ let main ((param, store): parameter * storage): return =
                     // loops through the list of signatures
                     // compares the managers' keys with the signatures
                     // keeps track of the number of signature to compare it later with the threshold
-                    let sig
+                    let sig_num: nat =
+                        List.fold 
+                            (
+                                fun ((acc, keys), signature: (nat * key list) * signature) -> 
+                                    match signature with
+                                    | None -> (failwith (): nat * (key list))
+                                    | Some sig -> (
+                                        match keys with
+                                        | [] -> failwith ()
+                                        | hd -> (acc + 1n, [])
+                                        | (hd::tl) -> (acc + 1n, tl)
+                                    )
+                            ) 
+                            sigs 
+                            (acc, store.keys)
+                    in
 
                     [], store
         )
