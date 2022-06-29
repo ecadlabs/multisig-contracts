@@ -65,22 +65,38 @@ let main ((param, store): parameter * storage): return =
                     // loops through the list of signatures
                     // compares the managers' keys with the signatures
                     // keeps track of the number of signature to compare it later with the threshold
-                    let sig_num: nat =
+                    let (sig_num, _): (nat * key list) =
                         List.fold 
                             (
-                                fun ((acc, keys), signature: (nat * key list) * signature) -> 
+                                fun ((acc, keys), signature: (nat * key list) * (signature option)) -> 
                                     match signature with
                                     | None -> (failwith (): nat * (key list))
                                     | Some sig -> (
                                         match keys with
                                         | [] -> failwith ()
-                                        | hd -> (acc + 1n, [])
-                                        | (hd::tl) -> (acc + 1n, tl)
+                                        | (key::tl) -> (
+                                            // checks the signature
+                                            if Crypto.check key sig bytes_to_sign
+                                            then (acc + 1n, tl)
+                                            else failwith ()
+                                        )
                                     )
                             ) 
                             sigs 
-                            (acc, store.keys)
+                            (0n, store.keys)
                     in
-
-                    [], store
+                    // checks that the number of signature matched the threshold
+                    if store.threshold <= sig_num
+                    then
+                        let new_store = { store with stored_counter = store.stored_counter + 1n } in
+                        let (ops, new_store) = 
+                            match payload.action with
+                            | Operation exec ->
+                                // runs the lambda
+                                exec (), new_store
+                            | Change_keys { threshold = threshold ; keys = keys } ->
+                                // updates the managers' keys
+                                [], { new_store with threshold = threshold ; keys = keys }
+                        in ops, new_store
+                    else failwith ()
         )
