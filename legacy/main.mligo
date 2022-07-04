@@ -51,7 +51,6 @@ let main ((param, store): parameter * storage): return =
     | Main p ->
         (
             // no amount to be sent to this entrypoint
-            // let _ = assert(Tezos.get_amount () <> 0mutez) in
             if Tezos.get_amount () <> 0mutez
             then failwith ()
             else

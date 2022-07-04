@@ -1,0 +1,71 @@
+{ parameter
+    (or (unit %default)
+        (pair %main
+           (pair %payload
+              (nat %counter)
+              (or %action
+                 (lambda %operation unit (list operation))
+                 (pair %change_keys (nat %threshold) (list %keys key))))
+           (list %sigs (option signature)))) ;
+  storage (pair (nat %stored_counter) (nat %threshold) (list %keys key)) ;
+  code { UNPAIR ;
+         IF_LEFT
+           { DROP ; NIL operation ; PAIR }
+           { PUSH mutez 0 ;
+             AMOUNT ;
+             COMPARE ;
+             NEQ ;
+             IF { DROP 2 ; UNIT ; FAILWITH }
+                { UNPAIR ;
+                  DUP ;
+                  SELF_ADDRESS ;
+                  CHAIN_ID ;
+                  PAIR ;
+                  PAIR ;
+                  PACK ;
+                  DUP 4 ;
+                  CAR ;
+                  DUP 3 ;
+                  CAR ;
+                  COMPARE ;
+                  NEQ ;
+                  IF { DROP 4 ; UNIT ; FAILWITH }
+                     { DUP 4 ;
+                       GET 4 ;
+                       PUSH nat 0 ;
+                       PAIR ;
+                       DIG 3 ;
+                       ITER { SWAP ;
+                              UNPAIR ;
+                              DIG 2 ;
+                              IF_NONE
+                                { DROP 2 ; UNIT ; FAILWITH }
+                                { DIG 2 ;
+                                  IF_CONS
+                                    { DUP 5 ;
+                                      DIG 3 ;
+                                      DIG 2 ;
+                                      CHECK_SIGNATURE ;
+                                      IF { PUSH nat 1 ; DIG 2 ; ADD ; PAIR } { DROP 2 ; UNIT ; FAILWITH } }
+                                    { DROP 2 ; UNIT ; FAILWITH } } } ;
+                       SWAP ;
+                       DROP ;
+                       CAR ;
+                       DUP 3 ;
+                       GET 3 ;
+                       COMPARE ;
+                       LE ;
+                       IF { DUP 2 ;
+                            PUSH nat 1 ;
+                            DIG 3 ;
+                            CAR ;
+                            ADD ;
+                            UPDATE 1 ;
+                            SWAP ;
+                            CDR ;
+                            IF_LEFT
+                              { SWAP ; UNIT ; DIG 2 ; SWAP ; EXEC }
+                              { UNPAIR ; DIG 2 ; SWAP ; UPDATE 3 ; SWAP ; UPDATE 4 ; NIL operation } ;
+                            PAIR }
+                          { DROP 2 ; UNIT ; FAILWITH } } } } } }
+

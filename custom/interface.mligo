@@ -15,7 +15,7 @@ type proposal_info =
 
 type proposal =
 {
-    actions      : unit -> operation list;
+    actions     : unit -> operation list;
     expires_at  : block_level;
     approvals   : address set;
 }
