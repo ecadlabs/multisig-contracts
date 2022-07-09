@@ -1,0 +1,17 @@
+{
+  "name": "legacy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@taqueria/plugin-contract-types": "^0.6.5",
+    "@taqueria/plugin-flextesa": "^0.6.5",
+    "@taqueria/plugin-ligo": "^0.6.5"
+  }
+}

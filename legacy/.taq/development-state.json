@@ -1,0 +1,27 @@
+{
+    "operations": {},
+    "tasks": {
+        "@taqueria/plugin-ligo.compile.1657182378833": {
+            "time": 1657182378833,
+            "output": [
+                {
+                    "contract": "main.mligo",
+                    "artifact": "Not compiled"
+                }
+            ]
+        },
+        "@taqueria/plugin-ligo.compile.1657183100147": {
+            "time": 1657183100150,
+            "output": [
+                {
+                    "contract": "main.mligo",
+                    "artifact": "artifacts/main.tz"
+                }
+            ]
+        },
+        "@taqueria/plugin-contract-types.generate types.1657183219548": {
+            "time": 1657183219548,
+            "output": null
+        }
+    }
+}
