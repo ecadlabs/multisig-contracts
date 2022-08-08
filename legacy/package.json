@@ -4,14 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run",
+    "compile-to-json": "ligo compile contract ./legacy/contracts/main.mligo > ./legacy/artifacts/main.json --michelson-format json"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@taqueria/plugin-contract-types": "^0.6.5",
-    "@taqueria/plugin-flextesa": "^0.6.5",
-    "@taqueria/plugin-ligo": "^0.6.5"
+    "vitest": "^0.21.0"
+  },
+  "dependencies": {
+    "@taquito/signer": "^13.0.1",
+    "@taquito/taquito": "^13.0.1"
   }
 }

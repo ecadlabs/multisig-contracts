@@ -1,17 +1,10 @@
 {
     "operations": {},
     "tasks": {
-        "@taqueria/plugin-ligo.compile.1657182378833": {
-            "time": 1657182378833,
-            "output": [
-                {
-                    "contract": "main.mligo",
-                    "artifact": "Not compiled"
-                }
-            ]
-        },
-        "@taqueria/plugin-ligo.compile.1657183100147": {
-            "time": 1657183100150,
+        "@taqueria/plugin-ligo.compile.1659605415388": {
+            "task": "compile",
+            "plugin": "@taqueria/plugin-ligo",
+            "time": 1659605415388,
             "output": [
                 {
                     "contract": "main.mligo",
@@ -19,9 +12,16 @@
                 }
             ]
         },
-        "@taqueria/plugin-contract-types.generate types.1657183219548": {
-            "time": 1657183219548,
-            "output": null
+        "@taqueria/plugin-ligo.compile.1659947022840": {
+            "task": "compile",
+            "plugin": "@taqueria/plugin-ligo",
+            "time": 1659947022840,
+            "output": [
+                {
+                    "contract": "main.mligo",
+                    "artifact": "artifacts/main.tz"
+                }
+            ]
         }
     }
 }
