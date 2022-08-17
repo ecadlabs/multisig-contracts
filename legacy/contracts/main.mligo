@@ -52,14 +52,14 @@ let main ((param, store): parameter * storage): return =
         (
             // no amount to be sent to this entrypoint
             if Tezos.get_amount () <> 0mutez
-            then failwith ()
+            then failwith "UNEXPECTED_MUTEZ_AMOUNT"
             else
                 // forges the bytes that must be signed by the managers
                 let { payload ; sigs } = p in
                 let bytes_to_sign: bytes = Bytes.pack ((Tezos.get_chain_id (), Tezos.get_self_address ()), payload) in
                 // checks that the provided counter is correct
                 if payload.counter <> store.stored_counter
-                then failwith ()
+                then failwith "INCORRECT_PAYLOAD_COUNTER"
                 else
                     // loops through the list of signatures
                     // compares the managers' keys with the signatures
@@ -69,7 +69,7 @@ let main ((param, store): parameter * storage): return =
                             (
                                 fun ((acc, keys), signature: (nat * key list) * (signature option)) -> 
                                     match signature with
-                                    | None -> (failwith (): nat * (key list))
+                                    | None -> (failwith "SIG_IS_NONE": nat * (key list))
                                     | Some sig -> (
                                         match keys with
                                         | [] -> failwith ()
@@ -77,7 +77,7 @@ let main ((param, store): parameter * storage): return =
                                             // checks the signature
                                             if Crypto.check key sig bytes_to_sign
                                             then (acc + 1n, tl)
-                                            else failwith ()
+                                            else failwith "UNEXPECTED_SIGNATURE"
                                         )
                                     )
                             ) 
@@ -97,5 +97,5 @@ let main ((param, store): parameter * storage): return =
                                 // updates the managers' keys
                                 [], { new_store with threshold = threshold ; keys = keys }
                         in ops, new_store
-                    else failwith ()
+                    else failwith "INCORRECT_SIG_THRESHOLD"
         )
