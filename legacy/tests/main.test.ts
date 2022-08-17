@@ -60,93 +60,7 @@ describe("Testing multisig contract", () => {
         "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
         5_000_000
       );
-      /*const dataToPack = {
-        prim: "Pair",
-        args: [
-          {
-            string: chainId
-          },
-          {
-            prim: "Pair",
-            args: [
-              {
-                string: contractAddress
-              },
-              {
-                prim: "Pair",
-                args: [
-                  {
-                    int: storage.stored_counter.toNumber()
-                  },
-                  {
-                    prim: "Left",
-                    args: [{ lambda: lambda }]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      };
-      const typeToPack = {
-        prim: "pair",
-        args: [
-          {
-            prim: "chain_id"
-          },
-          {
-            prim: "pair",
-            args: [
-              {
-                prim: "address"
-              },
-              {
-                prim: "pair",
-                args: [
-                  {
-                    prim: "nat"
-                  },
-                  {
-                    prim: "or",
-                    args: [
-                      {
-                        prim: "lambda",
-                        args: [
-                          { prim: "unit" },
-                          {
-                            prim: "list",
-                            args: [
-                              {
-                                prim: "operation"
-                              }
-                            ]
-                          }
-                        ]
-                      },
-                      {
-                        prim: "pair",
-                        args: [
-                          {
-                            prim: "nat"
-                          },
-                          {
-                            prim: "list",
-                            args: [
-                              {
-                                prim: "key"
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }; */
+
       const p = new Parser();
 
       const testLambda = `{ DROP ; NIL operation ; PUSH key_hash "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb" ; IMPLICIT_ACCOUNT ; PUSH mutez 5000000 ; UNIT ; TRANSFER_TOKENS ; CONS }`;
@@ -156,69 +70,13 @@ describe("Testing multisig contract", () => {
       const michelsonType = `(pair chain_id (pair address (pair nat (or (lambda unit (list operation)) (pair nat (list key))))))`;
       const typeToPack = p.parseMichelineExpression(michelsonType);
 
-      /*const dataToPack = `{
-        "prim": "Pair",
-        "args": [
-          { "string": "${chainId}" },
-          {
-            "prim": "Pair",
-            "args": [
-              { "string": "${contractAddress}" },
-              {
-                "prim": "Pair",
-                "args": [
-                  { "int": "${storage.stored_counter.toNumber()}" },
-                  {
-                    "prim": "Left",
-                    "args": [
-                      {
-                        "prim": "lambda",
-                        "args": [{ lambda: ${lambda} }]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }`;
-      const typeToPack = `
-        {
-          "prim": "pair",
-          "args": [
-            { "prim": "chain_id" },
-            { "prim": "address" },
-            { "prim": "nat" },
-            {
-              "prim": "or",
-              "args": [
-                {
-                  "prim": "lambda",
-                  "args": [
-                    { "prim": "unit" },
-                    { "prim": "list", "args": [{ "prim": "operation" }] }
-                  ]
-                },
-                {
-                  "prim": "pair",
-                  "args": [
-                    { "prim": "nat" },
-                    { "prim": "list", "args": [{ "prim": "key" }] }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      `;*/
-
       const { packed } = await Tezos.rpc.packData({
         data: dataToPack as any,
         type: typeToPack as any
       });
 
-      const sigs = [(await Tezos.signer.sign(packed)).prefixSig];
+      const sigs = [(await Tezos.signer.sign(packed)).sig];
+      console.log({ sigs });
 
       const op = await contract.methodsObject
         .main({
@@ -236,3 +94,7 @@ describe("Testing multisig contract", () => {
     }
   });
 });
+
+/*
+ligo compile expression cameligo 'Crypto.check ("edpkvGfYw3LyB1UcCahKQk4rF2tvbMUk8GFiTuMjL75uGXrpvKXhjn": key) ("edsigtteEA2ynQ3dQ6a9Qy87xAohYfvHWzn2n7dhouKs5p9avfNw7VwuzAi7ffozYCU3UhwHe7KB2vhJFzj1dPKNR793zf2pcdv": signature) ("05070707070a000000043967f9870a000000160119db432d6ddce966c674039749db1cb73da67d4600070700000505020000003a02000000350320053d036d0743035d0a00000015006b82198cb179e8306c1bedd08f12dc863f328886031e0743036a0080ade204034f034d031b": bytes)'
+*/

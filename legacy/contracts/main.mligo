@@ -77,7 +77,7 @@ let main ((param, store): parameter * storage): return =
                                             // checks the signature
                                             if Crypto.check key sig bytes_to_sign
                                             then (acc + 1n, tl)
-                                            else failwith "UNEXPECTED_SIGNATURE"
+                                            else failwith ("WRONG_SIGNATURE", bytes_to_sign)
                                         )
                                     )
                             ) 
