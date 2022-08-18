@@ -53,6 +53,7 @@ describe("Testing multisig contract", () => {
   test("Send a transfer approval transaction to the contract", async () => {
     const contract = await Tezos.contract.at(contractAddress);
     const storage: any = await contract.storage();
+    let generatedBytes;
 
     try {
       const chainId = await Tezos.rpc.getChainId();
@@ -70,11 +71,12 @@ describe("Testing multisig contract", () => {
         data: dataToPack as any,
         type: typeToPack as any
       });
+      generatedBytes = packed;
 
       const sigs = [
         (await Tezos.signer.sign(packed, new Uint8Array())).prefixSig
       ];
-      console.log({ sigs });
+      console.log({ sigs, packed });
 
       const op = await contract.methodsObject
         .main({
@@ -88,11 +90,17 @@ describe("Testing multisig contract", () => {
       await op.confirmation();
     } catch (error) {
       console.error(JSON.stringify(error, null, 2));
+      const expectedBytes = error.errors[1].with.args[1].bytes;
+      console.log(
+        expectedBytes === generatedBytes
+          ? "Bytes sequences match"
+          : "Bytes sequences are different"
+      );
       expect.fail();
     }
   });
 });
 
 /*
-ligo compile expression cameligo 'Crypto.check ("edpkvGfYw3LyB1UcCahKQk4rF2tvbMUk8GFiTuMjL75uGXrpvKXhjn": key) ("edsigtteEA2ynQ3dQ6a9Qy87xAohYfvHWzn2n7dhouKs5p9avfNw7VwuzAi7ffozYCU3UhwHe7KB2vhJFzj1dPKNR793zf2pcdv": signature) ("05070707070a000000043967f9870a000000160119db432d6ddce966c674039749db1cb73da67d4600070700000505020000003a02000000350320053d036d0743035d0a00000015006b82198cb179e8306c1bedd08f12dc863f328886031e0743036a0080ade204034f034d031b": bytes)'
+ligo compile expression cameligo 'Crypto.check ("edpkvGfYw3LyB1UcCahKQk4rF2tvbMUk8GFiTuMjL75uGXrpvKXhjn": key) ("edsigtZDuVwwJHQZoV9dyeQe1xStaNru4kNVPBJEdukHmYq2hXrV6oP6wrRToHhR4NVn2KLcpzsPhoRxv2H5U5JyAjeXHxdENDK": signature) ("0507070a0000000456d7cf6707070a00000016013a4f8b390e164298e3fd0d678fbe9491eaff490b0007070000050502000000350320053d036d0743035d0a00000015006b82198cb179e8306c1bedd08f12dc863f328886031e0743036a0080ade204034f034d031b": bytes)'
 */
