@@ -56,7 +56,7 @@ let main ((param, store): parameter * storage): return =
             else
                 // forges the bytes that must be signed by the managers
                 let { payload ; sigs } = p in
-                let bytes_pair = ((Tezos.get_chain_id ()), ((Tezos.get_self_address ()), payload)) in
+                let bytes_pair = ((Tezos.get_chain_id ()), (Tezos.get_self_address ()), payload) in
                 let bytes_to_sign: bytes = Bytes.pack bytes_pair in
                 // checks that the provided counter is correct
                 if payload.counter <> store.stored_counter

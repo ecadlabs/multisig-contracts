@@ -62,11 +62,13 @@ describe("Testing multisig contract", () => {
 
       const lambda = `{ DROP ; NIL operation ; PUSH key_hash "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb" ; IMPLICIT_ACCOUNT ; PUSH mutez 5000000 ; UNIT ; TRANSFER_TOKENS ; CONS }`;
       // const michelsonData = `(Pair "${chainId}" (Pair "${contractAddress}" (Pair ${storage.stored_counter.toNumber()} (Left ${lambda}))))`;
-      const michelsonData = `(Pair "${chainId}" "${contractAddress}" ${storage.stored_counter.toNumber()} (Left ${lambda}))`;
+      // const michelsonData = `(Pair "${chainId}" "${contractAddress}" ${storage.stored_counter.toNumber()} (Left ${lambda}))`;
+      const michelsonData = `(Pair (Pair "${chainId}" "${contractAddress}") (Pair ${storage.stored_counter.toNumber()} (Left ${lambda})))`;
       const dataToPack = p.parseMichelineExpression(michelsonData);
 
       // const michelsonType = `(pair chain_id (pair address (pair nat (or (lambda unit (list operation)) (pair nat (list key))))))`;
-      const michelsonType = `(pair chain_id address nat (or (lambda unit (list operation)) (pair nat (list key))))`;
+      // const michelsonType = `(pair chain_id address nat (or (lambda unit (list operation)) (pair nat (list key))))`;
+      const michelsonType = `(pair (pair chain_id address) (pair nat (or (lambda unit (list operation)) (pair nat (list key)))))`;
       const typeToPack = p.parseMichelineExpression(michelsonType);
 
       const { packed } = await Tezos.rpc.packData({
@@ -107,5 +109,22 @@ describe("Testing multisig contract", () => {
 
 /*
 ligo compile expression cameligo 'Crypto.check ("edpkvGfYw3LyB1UcCahKQk4rF2tvbMUk8GFiTuMjL75uGXrpvKXhjn": key) ("edsigtZDuVwwJHQZoV9dyeQe1xStaNru4kNVPBJEdukHmYq2hXrV6oP6wrRToHhR4NVn2KLcpzsPhoRxv2H5U5JyAjeXHxdENDK": signature) ("0507070a0000000456d7cf6707070a00000016013a4f8b390e164298e3fd0d678fbe9491eaff490b0007070000050502000000350320053d036d0743035d0a00000015006b82198cb179e8306c1bedd08f12dc863f328886031e0743036a0080ade204034f034d031b": bytes)'
-ligo compile expression cameligo 'Bytes.pack (("NetXxwUSSfKRvwL": chain_id) ("KT1UGoyrVyqTegQ5rXVmbSxcWzTqc3XxFgWC": address) 0n )'
+chain 'Bytes.pack (("NetXxwUSSfKRvwL": chain_id) ("KT1UGoyrVyqTegQ5rXVmbSxcWzTqc3XxFgWC": address) 0n )'
+*/
+
+/*
+ligo compile expression cameligo  'type change_keys_param =
+[@layout:comb]
+{ threshold : nat; keys : key list} in
+type action = 
+    [@layout:comb]
+    | Operation of unit -> (operation list)
+    | Change_keys of change_keys_param in
+type param_payload =
+[@layout:comb]
+{ 
+    counter : nat; 
+    action  : action
+} in
+(Bytes.unpack ("0507070a00000004eec75c1507070a0000001601968801384d89d00bb54b4978cd7d332c522ecbce00070700000505020000003a02000000350320053d036d0743035d0a00000015006b82198cb179e8306c1bedd08f12dc863f328886031e0743036a0080ade204034f034d031b": bytes): (chain_id * (address * param_payload)) option)'
 */
