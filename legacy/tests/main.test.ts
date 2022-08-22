@@ -107,4 +107,5 @@ describe("Testing multisig contract", () => {
 
 /*
 ligo compile expression cameligo 'Crypto.check ("edpkvGfYw3LyB1UcCahKQk4rF2tvbMUk8GFiTuMjL75uGXrpvKXhjn": key) ("edsigtZDuVwwJHQZoV9dyeQe1xStaNru4kNVPBJEdukHmYq2hXrV6oP6wrRToHhR4NVn2KLcpzsPhoRxv2H5U5JyAjeXHxdENDK": signature) ("0507070a0000000456d7cf6707070a00000016013a4f8b390e164298e3fd0d678fbe9491eaff490b0007070000050502000000350320053d036d0743035d0a00000015006b82198cb179e8306c1bedd08f12dc863f328886031e0743036a0080ade204034f034d031b": bytes)'
+ligo compile expression cameligo 'Bytes.pack (("NetXxwUSSfKRvwL": chain_id) ("KT1UGoyrVyqTegQ5rXVmbSxcWzTqc3XxFgWC": address) 0n )'
 */
