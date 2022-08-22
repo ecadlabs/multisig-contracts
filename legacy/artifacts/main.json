@@ -60,18 +60,21 @@
                                 { "string": "UNEXPECTED_MUTEZ_AMOUNT" } ] },
                           { "prim": "FAILWITH" } ],
                         [ { "prim": "UNPAIR" }, { "prim": "DUP" },
+                          { "prim": "CDR" },
+                          { "prim": "DUP", "args": [ { "int": "2" } ] },
+                          { "prim": "CAR" }, { "prim": "PAIR" },
                           { "prim": "SELF_ADDRESS" }, { "prim": "PAIR" },
                           { "prim": "CHAIN_ID" }, { "prim": "PAIR" },
-                          { "prim": "PACK" },
-                          { "prim": "DUP", "args": [ { "int": "4" } ] },
+                          { "prim": "DUP" }, { "prim": "PACK" },
+                          { "prim": "DUP", "args": [ { "int": "5" } ] },
                           { "prim": "CAR" },
-                          { "prim": "DUP", "args": [ { "int": "3" } ] },
+                          { "prim": "DUP", "args": [ { "int": "4" } ] },
                           { "prim": "CAR" }, { "prim": "COMPARE" },
                           { "prim": "NEQ" },
                           { "prim": "IF",
                             "args":
                               [ [ { "prim": "DROP",
-                                    "args": [ { "int": "4" } ] },
+                                    "args": [ { "int": "5" } ] },
                                   { "prim": "PUSH",
                                     "args":
                                       [ { "prim": "string" },
@@ -79,7 +82,7 @@
                                             "INCORRECT_PAYLOAD_COUNTER" } ] },
                                   { "prim": "FAILWITH" } ],
                                 [ { "prim": "DUP",
-                                    "args": [ { "int": "4" } ] },
+                                    "args": [ { "int": "5" } ] },
                                   { "prim": "GET",
                                     "args": [ { "int": "4" } ] },
                                   { "prim": "PUSH",
@@ -87,7 +90,7 @@
                                       [ { "prim": "nat" }, { "int": "0" } ] },
                                   { "prim": "PAIR" },
                                   { "prim": "DIG",
-                                    "args": [ { "int": "3" } ] },
+                                    "args": [ { "int": "4" } ] },
                                   { "prim": "ITER",
                                     "args":
                                       [ [ { "prim": "SWAP" },
@@ -147,12 +150,19 @@
                                                                   { "prim":
                                                                     "DUP" },
                                                                   { "prim":
+                                                                    "DUP",
+                                                                    "args":
+                                                                    [ { "int":
+                                                                    "3" } ] },
+                                                                  { "prim":
                                                                     "PUSH",
                                                                     "args":
                                                                     [ { "prim":
                                                                     "string" },
                                                                     { "string":
                                                                     "WRONG_SIGNATURE" } ] },
+                                                                  { "prim":
+                                                                    "PAIR" },
                                                                   { "prim":
                                                                     "PAIR" },
                                                                   { "prim":
@@ -163,7 +173,11 @@
                                                           { "prim": "UNIT" },
                                                           { "prim":
                                                               "FAILWITH" } ] ] } ] ] } ] ] },
-                                  { "prim": "SWAP" }, { "prim": "DROP" },
+                                  { "prim": "SWAP" },
+                                  { "prim": "DIG",
+                                    "args": [ { "int": "2" } ] },
+                                  { "prim": "DROP",
+                                    "args": [ { "int": "2" } ] },
                                   { "prim": "CAR" },
                                   { "prim": "DUP",
                                     "args": [ { "int": "3" } ] },

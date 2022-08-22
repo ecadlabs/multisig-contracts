@@ -61,10 +61,12 @@ describe("Testing multisig contract", () => {
       const p = new Parser();
 
       const lambda = `{ DROP ; NIL operation ; PUSH key_hash "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb" ; IMPLICIT_ACCOUNT ; PUSH mutez 5000000 ; UNIT ; TRANSFER_TOKENS ; CONS }`;
-      const michelsonData = `(Pair "${chainId}" (Pair "${contractAddress}" (Pair ${storage.stored_counter.toNumber()} (Left ${lambda}))))`;
+      // const michelsonData = `(Pair "${chainId}" (Pair "${contractAddress}" (Pair ${storage.stored_counter.toNumber()} (Left ${lambda}))))`;
+      const michelsonData = `(Pair "${chainId}" "${contractAddress}" ${storage.stored_counter.toNumber()} (Left ${lambda}))`;
       const dataToPack = p.parseMichelineExpression(michelsonData);
 
-      const michelsonType = `(pair chain_id (pair address (pair nat (or (lambda unit (list operation)) (pair nat (list key))))))`;
+      // const michelsonType = `(pair chain_id (pair address (pair nat (or (lambda unit (list operation)) (pair nat (list key))))))`;
+      const michelsonType = `(pair chain_id address nat (or (lambda unit (list operation)) (pair nat (list key))))`;
       const typeToPack = p.parseMichelineExpression(michelsonType);
 
       const { packed } = await Tezos.rpc.packData({
@@ -76,7 +78,7 @@ describe("Testing multisig contract", () => {
       const sigs = [
         (await Tezos.signer.sign(packed, new Uint8Array())).prefixSig
       ];
-      console.log({ sigs, packed });
+      console.log(dataToPack);
 
       const op = await contract.methodsObject
         .main({

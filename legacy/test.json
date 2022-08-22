@@ -1,0 +1,73 @@
+{
+  "prim": "Pair",
+  "args": [
+    [
+      {
+        "string": "WRONG_SIGNATURE"
+      },
+      {
+        "bytes": "eec75c15"
+      },
+      {
+        "bytes": "01157182840c54a2f19175ffa7f389aea248b3f76900"
+      },
+      {
+        "int": "0"
+      },
+      {
+        "prim": "Left",
+        "args": [
+          [
+            [
+              {
+                "prim": "DROP"
+              },
+              {
+                "prim": "NIL",
+                "args": [
+                  {
+                    "prim": "operation"
+                  }
+                ]
+              },
+              {
+                "prim": "PUSH",
+                "args": [
+                  {
+                    "prim": "key_hash"
+                  },
+                  {
+                    "bytes": "006b82198cb179e8306c1bedd08f12dc863f328886"
+                  }
+                ]
+              },
+              {
+                "prim": "IMPLICIT_ACCOUNT"
+              },
+              {
+                "prim": "PUSH",
+                "args": [
+                  {
+                    "prim": "mutez"
+                  },
+                  {
+                    "int": "5000000"
+                  }
+                ]
+              },
+              {
+                "prim": "UNIT"
+              },
+              {
+                "prim": "TRANSFER_TOKENS"
+              },
+              {
+                "prim": "CONS"
+              }
+            ]
+          ]
+        ]
+      }
+    ]
+  ]
+}

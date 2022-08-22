@@ -10,7 +10,7 @@ type change_keys_param =
 
 type action = 
     [@layout:comb]
-    | Operation of unit -> operation list
+    | Operation of unit -> (operation list)
     | Change_keys of change_keys_param
 
 type param_payload =
@@ -56,7 +56,8 @@ let main ((param, store): parameter * storage): return =
             else
                 // forges the bytes that must be signed by the managers
                 let { payload ; sigs } = p in
-                let bytes_to_sign: bytes = Bytes.pack ((Tezos.get_chain_id (), (Tezos.get_self_address (), payload))) in
+                let bytes_pair = (Tezos.get_chain_id (), (Tezos.get_self_address (), (payload.counter, payload.action))) in
+                let bytes_to_sign: bytes = Bytes.pack bytes_pair in
                 // checks that the provided counter is correct
                 if payload.counter <> store.stored_counter
                 then failwith "INCORRECT_PAYLOAD_COUNTER"
@@ -77,7 +78,7 @@ let main ((param, store): parameter * storage): return =
                                             // checks the signature
                                             if Crypto.check key sig bytes_to_sign
                                             then (acc + 1n, tl)
-                                            else failwith ("WRONG_SIGNATURE", bytes_to_sign)
+                                            else failwith ("WRONG_SIGNATURE", bytes_pair, bytes_to_sign)
                                         )
                                     )
                             ) 
