@@ -60,7 +60,7 @@ describe("Testing multisig contract", () => {
 
       const p = new Parser();
 
-      const lambda = `{ { DROP ; NIL operation ; PUSH key_hash "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb" ; IMPLICIT_ACCOUNT ; PUSH mutez 5000000 ; UNIT ; TRANSFER_TOKENS ; CONS } }`;
+      const lambda = `{DROP ; NIL operation ; PUSH key_hash "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb" ; IMPLICIT_ACCOUNT ; PUSH mutez 5000000 ; UNIT ; TRANSFER_TOKENS ; CONS}`;
       const michelsonData = `(Pair "${chainId}" (Pair "${contractAddress}" (Pair ${storage.stored_counter.toNumber()} (Left ${lambda}))))`;
       // const michelsonData = `(Pair "${chainId}" "${contractAddress}" ${storage.stored_counter.toNumber()} (Left ${lambda}))`;
       // const michelsonData = `(Pair (Pair "${chainId}" "${contractAddress}") (Pair ${storage.stored_counter.toNumber()} (Left ${lambda})))`;
@@ -80,18 +80,19 @@ describe("Testing multisig contract", () => {
       const sigs = [
         (await Tezos.signer.sign(packed, new Uint8Array())).prefixSig
       ];
-      console.log(dataToPack);
 
       const op = await contract.methodsObject
         .main({
           payload: {
             counter: storage.stored_counter.toNumber(),
-            action: { operation: [p.parseMichelineExpression(lambda)] }
+            action: { operation: p.parseMichelineExpression(lambda) }
           },
           sigs
         })
         .send();
       await op.confirmation();
+      const newStorage: any = await contract.storage();
+      expect(newStorage.stored_counter.toNumber()).toEqual(1);
     } catch (error) {
       console.error(JSON.stringify(error, null, 2));
       const expectedBytes = error.errors[1].with.args[1].bytes;
@@ -126,5 +127,5 @@ type param_payload =
     counter : nat; 
     action  : action
 } in
-(Bytes.unpack ("0507070a00000004eec75c1507070a0000001601968801384d89d00bb54b4978cd7d332c522ecbce00070700000505020000003a02000000350320053d036d0743035d0a00000015006b82198cb179e8306c1bedd08f12dc863f328886031e0743036a0080ade204034f034d031b": bytes): (chain_id * (address * param_payload)) option)'
+(Bytes.unpack ("0507070a00000004d10f5e1307070a00000016015c001a2fffb865ea3f0ba7ca6f9992957f7d50f200070700000505020000003f020000003a02000000350320053d036d0743035d0a00000015006b82198cb179e8306c1bedd08f12dc863f328886031e0743036a0080ade204034f034d031b": bytes): (chain_id * (address * param_payload)) option)'
 */
