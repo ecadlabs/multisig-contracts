@@ -39,6 +39,14 @@ type storage =
     keys            : key list;
 }
 
+type pair_to_pack =
+[@layout:comb]
+{
+    chain_id        : chain_id;
+    contract_address: address;
+    payload         : param_payload
+}
+
 type return = operation list * storage
 
 (*
@@ -56,7 +64,12 @@ let main ((param, store): parameter * storage): return =
             else
                 // forges the bytes that must be signed by the managers
                 let { payload ; sigs } = p in
-                let bytes_pair = ((Tezos.get_chain_id ()), (Tezos.get_self_address ()), payload) in
+                let bytes_pair: pair_to_pack = 
+                {
+                    chain_id            = (Tezos.get_chain_id ());
+                    contract_address    = (Tezos.get_self_address ());
+                    payload             = payload
+                } in
                 let bytes_to_sign: bytes = Bytes.pack bytes_pair in
                 // checks that the provided counter is correct
                 if payload.counter <> store.stored_counter

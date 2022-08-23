@@ -20,8 +20,7 @@
                   DUP ;
                   SELF_ADDRESS ;
                   CHAIN_ID ;
-                  PAIR ;
-                  PAIR ;
+                  PAIR 3 ;
                   DUP ;
                   PACK ;
                   DUP 5 ;

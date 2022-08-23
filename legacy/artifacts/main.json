@@ -61,7 +61,7 @@
                           { "prim": "FAILWITH" } ],
                         [ { "prim": "UNPAIR" }, { "prim": "DUP" },
                           { "prim": "SELF_ADDRESS" }, { "prim": "CHAIN_ID" },
-                          { "prim": "PAIR" }, { "prim": "PAIR" },
+                          { "prim": "PAIR", "args": [ { "int": "3" } ] },
                           { "prim": "DUP" }, { "prim": "PACK" },
                           { "prim": "DUP", "args": [ { "int": "5" } ] },
                           { "prim": "CAR" },
