@@ -3,6 +3,7 @@ import { TezosToolkit } from "@taquito/taquito";
 import { InMemorySigner } from "@taquito/signer";
 import { Parser } from "@taquito/michel-codec";
 import multisigContract from "../artifacts/main.json";
+import { transferTransaction, transferPayloadToSign } from "./multisigParam";
 
 const LOCAL_NODE = "http://localhost:20000";
 
@@ -55,6 +56,36 @@ describe("Testing multisig contract", () => {
     const storage: any = await contract.storage();
 
     try {
+      const { payload } = await transferPayloadToSign({
+        Tezos,
+        contractAddress,
+        recipient: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
+        amount: 5_000_000,
+        counter: storage.stored_counter.toNumber()
+      });
+      const contractCall = await transferTransaction({
+        Tezos,
+        contractAddress,
+        recipient: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
+        amount: 5_000_000,
+        signatures: [
+          (await Tezos.signer.sign(payload, new Uint8Array())).prefixSig
+        ]
+      });
+      const op = await contractCall.send();
+      await op.confirmation();
+      const newStorage: any = await contract.storage();
+      expect(newStorage.stored_counter.toNumber()).toEqual(1);
+    } catch (error) {
+      console.error(JSON.stringify(error, null, 2));
+    }
+  });
+
+  /*test("Send a transfer approval transaction to the contract", async () => {
+    const contract = await Tezos.contract.at(contractAddress);
+    const storage: any = await contract.storage();
+
+    try {
       const chainId = await Tezos.rpc.getChainId();
 
       const p = new Parser();
@@ -103,7 +134,7 @@ describe("Testing multisig contract", () => {
       // );
       expect.fail();
     }
-  });
+  });*/
 });
 
 /*

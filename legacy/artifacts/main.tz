@@ -54,7 +54,12 @@
                                            PAIR ;
                                            PAIR ;
                                            FAILWITH } }
-                                    { DROP 2 ; UNIT ; FAILWITH } } } ;
+                                    { DROP ;
+                                      PUSH nat 0 ;
+                                      DUP 2 ;
+                                      COMPARE ;
+                                      EQ ;
+                                      IF { DROP ; PUSH string "NO_KEYS" ; FAILWITH } { NIL key ; SWAP ; PAIR } } } } ;
                        SWAP ;
                        DIG 2 ;
                        DROP 2 ;

@@ -86,7 +86,10 @@ let main ((param, store): parameter * storage): return =
                                     | None -> (failwith "SIG_IS_NONE": nat * (key list))
                                     | Some sig -> (
                                         match keys with
-                                        | [] -> failwith ()
+                                        | [] -> 
+                                            if acc = 0n
+                                            then failwith "NO_KEYS"
+                                            else (acc, [])
                                         | (key::tl) -> (
                                             // checks the signature
                                             if Crypto.check key sig bytes_to_sign

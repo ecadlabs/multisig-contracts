@@ -6,21 +6,21 @@ import type {
 } from "@taquito/taquito";
 import { Parser } from "@taquito/michel-codec";
 
-export const payloadToSign = async ({
+export const transferPayloadToSign = async ({
   Tezos,
-  chainId,
   recipient,
   amount,
   contractAddress,
   counter
 }: {
   Tezos: TezosToolkit;
-  chainId: string;
   recipient: string;
   amount: number;
   contractAddress: string;
   counter: number;
-}): Promise<{ payload: string; lambda: string }> => {
+}): Promise<{ payload: string; lambda: any }> => {
+  const chainId = await Tezos.rpc.getChainId();
+
   const p = new Parser();
 
   const lambda = `{ DROP ; NIL operation ; PUSH key_hash "${recipient}" ; IMPLICIT_ACCOUNT ; PUSH mutez ${amount} ; UNIT ; TRANSFER_TOKENS ; CONS }`;
@@ -37,7 +37,7 @@ export const payloadToSign = async ({
 
   return {
     payload: packed,
-    lambda: JSON.stringify(p.parseMichelineExpression(lambda))
+    lambda: p.parseMichelineExpression(lambda)
   };
 };
 
@@ -56,11 +56,9 @@ export const transferTransaction = async ({
 }): Promise<ContractMethodObject<ContractProvider | Wallet>> => {
   const contract = await Tezos.contract.at(contractAddress);
   const storage: any = await contract.storage();
-  const chainId = await Tezos.rpc.getChainId();
 
-  const { payload, lambda } = await payloadToSign({
+  const { payload, lambda } = await transferPayloadToSign({
     Tezos,
-    chainId,
     recipient,
     amount,
     contractAddress,
