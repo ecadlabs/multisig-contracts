@@ -1,9 +1,8 @@
 import { describe, test, expect, beforeAll } from "vitest";
 import { TezosToolkit } from "@taquito/taquito";
 import { InMemorySigner } from "@taquito/signer";
-import { Parser } from "@taquito/michel-codec";
 import multisigContract from "../artifacts/main.json";
-import { transferTransaction, transferPayloadToSign } from "./multisigParam";
+import { sendMultisigOperation } from "./multisigParam";
 
 const LOCAL_NODE = "http://localhost:20000";
 
@@ -53,24 +52,18 @@ describe("Testing multisig contract", () => {
 
   test("Send a transfer approval transaction to the contract", async () => {
     const contract = await Tezos.contract.at(contractAddress);
-    const storage: any = await contract.storage();
 
     try {
-      const { payload } = await transferPayloadToSign({
+      const params = {
         Tezos,
         contractAddress,
         recipient: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
-        amount: 5_000_000,
-        counter: storage.stored_counter.toNumber()
-      });
-      const contractCall = await transferTransaction({
-        Tezos,
-        contractAddress,
-        recipient: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
-        amount: 5_000_000,
-        signatures: [
-          (await Tezos.signer.sign(payload, new Uint8Array())).prefixSig
-        ]
+        amount: 5_000_000
+      };
+      const contractCall = await sendMultisigOperation({
+        ...params,
+        txOptions: { type: "transfer" },
+        signatures: []
       });
       const op = await contractCall.send();
       await op.confirmation();
@@ -78,63 +71,49 @@ describe("Testing multisig contract", () => {
       expect(newStorage.stored_counter.toNumber()).toEqual(1);
     } catch (error) {
       console.error(JSON.stringify(error, null, 2));
+      expect.fail();
     }
   });
 
-  /*test("Send a transfer approval transaction to the contract", async () => {
+  test("Send a change key transaction to the contract", async () => {
     const contract = await Tezos.contract.at(contractAddress);
-    const storage: any = await contract.storage();
 
     try {
-      const chainId = await Tezos.rpc.getChainId();
-
-      const p = new Parser();
-
-      const lambda = `{ DROP ; NIL operation ; PUSH key_hash "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb" ; IMPLICIT_ACCOUNT ; PUSH mutez 5000000 ; UNIT ; TRANSFER_TOKENS ; CONS }`;
-      const michelsonData = `(Pair "${chainId}" (Pair "${contractAddress}" (Pair ${storage.stored_counter.toNumber()} (Left ${lambda}))))`;
-      // const michelsonData = `(Pair "${chainId}" "${contractAddress}" ${storage.stored_counter.toNumber()} (Left ${lambda}))`;
-      // const michelsonData = `(Pair (Pair "${chainId}" "${contractAddress}") (Pair ${storage.stored_counter.toNumber()} (Left ${lambda})))`;
-      const dataToPack = p.parseMichelineExpression(michelsonData);
-
-      const michelsonType = `(pair chain_id (pair address (pair nat (or (lambda unit (list operation)) (pair nat (list key))))))`;
-      // const michelsonType = `(pair chain_id address nat (or (lambda unit (list operation)) (pair nat (list key))))`;
-      // const michelsonType = `(pair (pair chain_id address) (pair nat (or (lambda unit (list operation)) (pair nat (list key)))))`;
-      const typeToPack = p.parseMichelineExpression(michelsonType);
-
-      const { packed } = await Tezos.rpc.packData({
-        data: dataToPack as any,
-        type: typeToPack as any
+      const params = {
+        Tezos,
+        contractAddress
+      };
+      const contractCall = await sendMultisigOperation({
+        ...params,
+        txOptions: {
+          type: "changeKeys",
+          args: {
+            threshold: 2,
+            keys: [
+              "edpkvGfYw3LyB1UcCahKQk4rF2tvbMUk8GFiTuMjL75uGXrpvKXhjn",
+              "edpkvGfYw3LyB1UcCahKQk4rF2tvbMUk8GFiTuMjL75uGXrpvKXhjn"
+            ]
+          }
+        },
+        signatures: []
       });
-
-      const sigs = [
-        (await Tezos.signer.sign(packed, new Uint8Array())).prefixSig
-      ];
-
-      const op = await contract.methodsObject
-        .main({
-          payload: {
-            counter: storage.stored_counter.toNumber(),
-            action: { operation: p.parseMichelineExpression(lambda) }
-          },
-          sigs
-        })
-        .send();
+      const op = await contractCall.send();
       await op.confirmation();
       const newStorage: any = await contract.storage();
-      expect(newStorage.stored_counter.toNumber()).toEqual(1);
+      expect(newStorage.stored_counter.toNumber()).toEqual(2);
+      expect(Array.isArray(newStorage.keys)).toBeTruthy();
+      expect(newStorage.keys).toHaveLength(2);
+      expect(newStorage.keys[0]).toEqual(
+        "edpkvGfYw3LyB1UcCahKQk4rF2tvbMUk8GFiTuMjL75uGXrpvKXhjn"
+      );
+      expect(newStorage.keys[1]).toEqual(
+        "edpkvGfYw3LyB1UcCahKQk4rF2tvbMUk8GFiTuMjL75uGXrpvKXhjn"
+      );
     } catch (error) {
       console.error(JSON.stringify(error, null, 2));
-      // const expectedBytes = error.errors[1].with.args[1].bytes;
-      // console.log("Expected bytes:", expectedBytes);
-      // console.log("Generated bytes:", generatedBytes);
-      // console.log(
-      //   expectedBytes === generatedBytes
-      //     ? "Bytes sequences match"
-      //     : "Bytes sequences are different"
-      // );
       expect.fail();
     }
-  });*/
+  });
 });
 
 /*
