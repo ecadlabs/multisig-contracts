@@ -11,11 +11,11 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "vitest": "^0.21.0"
+    "vitest": "^0.24.3"
   },
   "dependencies": {
-    "@taquito/michel-codec": "^13.0.1",
-    "@taquito/signer": "^13.0.1",
-    "@taquito/taquito": "^13.0.1"
+    "@taquito/michel-codec": "^14.0.0",
+    "@taquito/signer": "^14.0.0",
+    "@taquito/taquito": "^14.0.0"
   }
 }

@@ -4,7 +4,7 @@ import type {
   ContractProvider,
   Wallet
 } from "@taquito/taquito";
-import { Parser } from "@taquito/michel-codec";
+import { Parser, packDataBytes } from "@taquito/michel-codec";
 
 export const transferPayloadToSign = async ({
   Tezos,
@@ -30,13 +30,15 @@ export const transferPayloadToSign = async ({
   const michelsonType = `(pair chain_id (pair address (pair nat (or (lambda unit (list operation)) (pair nat (list key))))))`;
   const typeToPack = p.parseMichelineExpression(michelsonType);
 
-  const { packed } = await Tezos.rpc.packData({
-    data: dataToPack as any,
-    type: typeToPack as any
-  });
+  // const { packed } = await Tezos.rpc.packData({
+  //   data: dataToPack as any,
+  //   type: typeToPack as any
+  // });
+
+  const { bytes } = packDataBytes(dataToPack as any, typeToPack as any);
 
   return {
-    payload: packed,
+    payload: bytes,
     lambda: p.parseMichelineExpression(lambda)
   };
 };
@@ -69,12 +71,14 @@ export const changeKeysPayloadToSign = async ({
   const michelsonType = `(pair chain_id (pair address (pair nat (or (lambda unit (list operation)) (pair nat (list key))))))`;
   const typeToPack = p.parseMichelineExpression(michelsonType);
 
-  const { packed } = await Tezos.rpc.packData({
-    data: dataToPack as any,
-    type: typeToPack as any
-  });
+  // const { packed } = await Tezos.rpc.packData({
+  //   data: dataToPack as any,
+  //   type: typeToPack as any
+  // });
 
-  return packed;
+  const { bytes } = packDataBytes(dataToPack as any, typeToPack as any);
+
+  return bytes;
 };
 
 export const sendMultisigOperation = async ({
